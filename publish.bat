@@ -52,7 +52,7 @@ if errorlevel 1 goto :error
 
 REM 4. package.json의 버전을 manifest.json에 적용
 for /f "tokens=*" %%i in ('node -p "require('./package.json').version"') do set version=%%i
-node -e "const fs = require('fs'); const manifest = require('./public/manifest.json'); manifest.version = '%version%'; fs.writeFileSync('./public/manifest.json', JSON.stringify(manifest, null, 2) + '\n');"
+node -e "const fs = require('fs'); const manifest = require('./dist/manifest.json'); manifest.version = '%version%'; fs.writeFileSync('./dist/manifest.json', JSON.stringify(manifest, null, 2) + '\n');"
 if errorlevel 1 goto :error
 
 REM 5. 변경사항 커밋

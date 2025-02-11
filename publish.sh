@@ -40,9 +40,9 @@ npm version $mode && \
 version=$(node -p "require('./package.json').version") && \
 node -e "
   const fs = require('fs');
-  const manifest = require('./public/manifest.json');
+  const manifest = require('./dist/manifest.json');
   manifest.version = '$version';
-  fs.writeFileSync('./public/manifest.json', JSON.stringify(manifest, null, 2) + '\n');
+  fs.writeFileSync('./dist/manifest.json', JSON.stringify(manifest, null, 2) + '\n');
 " && \
 # 5. 변경사항 커밋
 git add . && \
