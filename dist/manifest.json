@@ -1,11 +1,10 @@
 {
   "id": "jop-class101",
-  "name": "jop-class101",
-  "version": "0.0.1",
+  "name": "Class101 Plugin",
+  "version": "1.0.0",
   "minAppVersion": "0.15.0",
-  "description": "Jnjsoft Obsidian Plugin for Class101 Lecture Viewer in Typescript",
-  "author": "JnJ One <jnjsoft.one@gmail.com>",
-  "authorUrl": "https://github.com/jnjsoftone",
-  "isDesktopOnly": false,
-  "main": "main.js"
+  "description": "Class101 강의 노트를 Obsidian에서 관리하기 위한 플러그인입니다.",
+  "author": "Your Name",
+  "authorUrl": "https://github.com/yourusername",
+  "isDesktopOnly": true
 }
