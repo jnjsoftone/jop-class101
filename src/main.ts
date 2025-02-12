@@ -335,8 +335,12 @@ export default class Class101Plugin extends Plugin {
     try {
       const scriptContent = await this.apiClient.getLectureScript(sanitizedClassTitle, noteTitle);
       if (scriptContent) {
+        const formattedScript = await this.fileManager.createScriptContent(scriptContent, {
+          lecture,
+          noteTitle
+        });
         const scriptPath = this.fileManager.getFilePath(paths.scripts, `${noteTitle}_script.md`);
-        await this.fileManager.createFile(scriptPath, scriptContent);
+        await this.fileManager.createFile(scriptPath, formattedScript);
       }
     } catch (error) {
       console.log(`No script content found for lecture ${lectureSlug}`);

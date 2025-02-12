@@ -283,4 +283,56 @@ ${lectureList}`;
     }
     return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
   }
+
+  private parseVttContent(vttContent: string): string {
+    // VTT 파일에서 자막 텍스트만 추출
+    const lines = vttContent.split('\n');
+    const textLines: string[] = [];
+    
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i].trim();
+      
+      // 타임스탬프 라인 (00:00:00.000 --> 00:00:00.000) 건너뛰기
+      if (line.includes('-->')) {
+        continue;
+      }
+      
+      // WEBVTT 헤더와 타임스탬프 맵 건너뛰기
+      if (line === 'WEBVTT' || line.startsWith('X-TIMESTAMP-MAP=')) {
+        continue;
+      }
+      
+      // 숫자만 있는 라인(자막 번호) 건너뛰기
+      if (/^\d+$/.test(line)) {
+        continue;
+      }
+      
+      // 빈 라인 건너뛰기
+      if (line === '') {
+        continue;
+      }
+      
+      textLines.push(line);
+    }
+    
+    return textLines.join('\n');
+  }
+
+  async createScriptContent(scriptContent: string, data: {
+    lecture: Lecture;
+    noteTitle: string;
+  }): Promise<string> {
+    const { lecture, noteTitle } = data;
+    const parsedScript = this.parseVttContent(scriptContent);
+    
+    return `---
+title: "${lecture.title} 자막"
+tags:
+  - script/class101
+---
+
+[[${noteTitle}|← 돌아가기]]
+
+${parsedScript}`;
+  }
 } 
