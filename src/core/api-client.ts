@@ -113,4 +113,25 @@ export class Class101ApiClient {
       return null;
     }
   }
+
+  async getLectureNote(classId: string, lectureSlug: string): Promise<string> {
+    const url = `${this.baseUrl}/lecture/_repo/class101/html/classes/${classId}/${lectureSlug}/materials/index.html`;
+    const response = await fetch(url);
+    return response.text();
+  }
+
+  async getLectureAttachments(classId: string, lectureSlug: string): Promise<string[]> {
+    const url = `${this.baseUrl}/api/files/${classId}/${lectureSlug}`;
+    const response = await fetch(url);
+    if (!response.ok) return [];
+    const data = await response.json();
+    return data.files || [];
+  }
+
+  async getLectureScript(sanitizedClassTitle: string, noteTitle: string): Promise<string | null> {
+    const url = `${this.baseUrl}/lecture/class101/${sanitizedClassTitle}/${noteTitle}.vtt`;
+    const response = await fetch(url);
+    if (!response.ok) return null;
+    return response.text();
+  }
 } 

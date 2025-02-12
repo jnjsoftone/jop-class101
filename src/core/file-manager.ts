@@ -1,6 +1,6 @@
 import { App, TFile, Notice } from "obsidian";
 import { join } from "path";
-import type { Class101Settings } from "./types";
+import type { Class101Settings, Lecture } from "./types";
 
 export class FileManager {
   constructor(
@@ -136,5 +136,100 @@ ${tableContent}`;
       .replace(/[^\uAC00-\uD7A3a-zA-Z0-9_\(\)\<\>,\s]/g, "")
       .replace(/\s+/g, " ")
       .trim();
+  }
+
+  getPath(type: 'lectures' | 'reviews' | 'notes' | 'scripts' | 'classes', classTitle?: string): string {
+    const basePath = this.settings.rootDir;
+    const folderMap = {
+      lectures: this.settings.lectureFolder,
+      reviews: this.settings.reviewFolder,
+      notes: this.settings.noteFolder,
+      scripts: this.settings.scriptFolder,
+      classes: this.settings.classFolder,
+    };
+    
+    return classTitle 
+      ? join(basePath, folderMap[type], classTitle)
+      : join(basePath, folderMap[type]);
+  }
+
+  async createClassIndex(data: {
+    classTitle: string;
+    noteTitles: string[];
+    category: string;
+    sanitizedClassTitle: string;
+    classId: string;
+  }): Promise<void> {
+    const { classTitle, noteTitles, category, sanitizedClassTitle } = data;
+    const source = `https://class101.net/ko/classes/${data.classId}`;
+    const lectureList = noteTitles.map((noteTitle) => `### [[${noteTitle}]]`).join('\n\n');
+    
+    const content = `---
+title: "${classTitle}"
+source: ${source}
+category: ${category}
+tags: 
+  - class101/class
+---
+
+## 클래스 소개
+
+[[${sanitizedClassTitle}_intro|클래스 소개]]
+
+
+## 준비물
+
+[[${sanitizedClassTitle}_kit|준비물]]
+
+
+## 커리큘럼
+
+${lectureList}`;
+
+    const filePath = join(this.settings.rootDir, this.settings.classFolder, `${sanitizedClassTitle}.md`);
+    await this.createFileWithOverwriteCheck(filePath, content);
+  }
+
+  getFilePath(basePath: string, fileName: string): string {
+    return join(basePath, fileName);
+  }
+
+  async createFile(filePath: string, content: string): Promise<void> {
+    await this.createFileWithOverwriteCheck(filePath, content);
+  }
+
+  async getReviewTemplate(): Promise<string> {
+    return this.getTemplate("review");
+  }
+
+  createReviewContent(data: {
+    template: string;
+    lectureTitle: string;
+    source: string;
+    videoUrl: string;
+    noteTitle: string;
+  }): string {
+    const { template, lectureTitle, source, videoUrl, noteTitle } = data;
+    return template
+      .replace("{{lectureTitle}}", lectureTitle)
+      .replace("{{source}}", source)
+      .replace("{{videoUrl}}", videoUrl)
+      .replace("{{noteTitle}}", noteTitle);
+  }
+
+  async createLectureMarkdown(data: {
+    lecture: Lecture;
+    classTitle: string;
+    noteTitle: string;
+    source: string;
+    category: string;
+    sanitizedClassTitle: string;
+    prevNoteTitle: string | null;
+    nextNoteTitle: string | null;
+    classId: string;
+  }): Promise<string> {
+    const template = await this.getTemplate("lecture");
+    // ... 템플릿 처리 로직 구현 ...
+    return template;
   }
 } 

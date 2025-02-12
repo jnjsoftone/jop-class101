@@ -2,7 +2,7 @@
 REM [syntax] publish [patch|minor|major] [-m "commit message"]
 REM default: patch, "chore: build for publish"
 
-set PLUGIN_DIR="C:\JnJ\Notes\Obsidian\liveSync\dev\.obsidian\plugins\jop-class101"
+set PLUGIN_DIR="D:\Notes\Obsidian\liveSync\dev\.obsidian\plugins\jop-class101"
 @REM ex) set PLUGIN_DIR=D:\Notes\Obsidian\liveSync\dev\.obsidian\plugins\jop-web
 
 :: 플러그인 디렉토리가 없으면 생성

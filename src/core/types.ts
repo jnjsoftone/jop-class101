@@ -42,4 +42,12 @@ export interface ProcessLectureOptions {
   htmlBaseUrl: string;
   prevNoteTitle: string | null;
   nextNoteTitle: string | null;
+}
+
+export interface Lecture extends LectureInfo {
+  // LectureInfo의 모든 속성을 상속
+}
+
+export interface ClassInfoWithLectures extends ClassInfo {
+  lectures: Lecture[];
 } 
