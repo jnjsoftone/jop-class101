@@ -34,9 +34,14 @@ done
 git pull && \
 # 2. 빌드
 npm run build && \
-# 3. npm 버전 업데이트 (이때 자동으로 버전 태그가 생성됨)
+# 3. 변경사항 커밋
+git add . && \
+git commit -m "$commit_msg" && \
+# 4. git push
+git push --follow-tags && \
+# 5. npm 버전 업데이트 (이때 자동으로 버전 태그가 생성됨)
 npm version $mode && \
-# 4. package.json의 버전을 manifest.json에 적용
+# 6. package.json의 버전을 manifest.json에 적용
 version=$(node -p "require('./package.json').version") && \
 node -e "
   const fs = require('fs');
@@ -44,10 +49,6 @@ node -e "
   manifest.version = '$version';
   fs.writeFileSync('./dist/manifest.json', JSON.stringify(manifest, null, 2) + '\n');
 " && \
-# 5. 변경사항 커밋
-git add . && \
-git commit -m "chore: release version $version" && \
-# 6. git push
-git push --follow-tags && \
+
 # 7. obsidian 플러그인 배포
 cp -R dist/* "$PLUGIN_DIR/"
