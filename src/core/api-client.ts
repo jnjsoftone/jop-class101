@@ -44,24 +44,34 @@ export class Class101ApiClient {
   }
 
   async getClassInfo(classId: string): Promise<ClassInfoWithLectures> {
-    const [classes, lecturesResponse] = await Promise.all([
-      this.fetchJson<ClassInfo[]>(`${this.baseUrl}/lecture/_repo/class101/json/myclasses.json`),
-      this.fetchJson<Lecture[] | { lectures: Lecture[] }>(`${this.baseUrl}/lecture/_repo/class101/json/classes/${classId}.json`)
-    ]);
+    try {
+      // 먼저 강의 정보를 가져옴
+      const lecturesResponse = await this.fetchJson<Lecture[] | { lectures: Lecture[] }>(
+        `${this.baseUrl}/lecture/_repo/class101/json/classes/${classId}.json`
+      );
 
-    const classInfo = classes.find((c) => c.classId === classId);
-    if (!classInfo) {
-      throw new Error(`Class ID ${classId} not found`);
+      // 강의 정보가 있으면 클래스 정보를 가져옴
+      const classes = await this.fetchJson<ClassInfo[]>(
+        `${this.baseUrl}/lecture/_repo/class101/json/myclasses.json`
+      );
+
+      const classInfo = classes.find((c) => c.classId === classId);
+      if (!classInfo) {
+        throw new Error(`Class ID ${classId} not found in myclasses.json`);
+      }
+
+      const lectures = Array.isArray(lecturesResponse) 
+        ? lecturesResponse 
+        : lecturesResponse.lectures;
+
+      return {
+        ...classInfo,
+        lectures: lectures || []
+      };
+    } catch (error) {
+      console.error(`Error fetching class info for ${classId}:`, error);
+      throw error;
     }
-
-    const lectures = Array.isArray(lecturesResponse) 
-      ? lecturesResponse 
-      : lecturesResponse.lectures;
-
-    return {
-      ...classInfo,
-      lectures: lectures || []
-    };
   }
 
   async getLectureInfo(classId: string): Promise<LectureInfo[]> {
