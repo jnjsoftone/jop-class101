@@ -1,6 +1,6 @@
 {
   "name": "jop-class101",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "Jnjsoft Obsidian Plugin for Class101 Lecture Viewer in Typescript",
   "author": "JnJ One <jnjsoft.one@gmail.com>",
   "main": "dist/main.js",
