@@ -218,7 +218,7 @@ export default class Class101Plugin extends Plugin {
         this.apiClient.getClassInfo(classId)
       ]) as [ClassInfo[], ClassInfoWithLectures];
 
-      const lectures = Array.isArray(classInfo) ? classInfo : classInfo.lectures;
+      const lectures = classInfo.lectures;
       const classData = classesJson.find((c) => c.classId === classId);
 
       if (!classData) {

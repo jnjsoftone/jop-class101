@@ -38,13 +38,21 @@ export class Class101ApiClient {
     }
   }
 
-  async getClassInfo(classId: string): Promise<ClassInfo> {
-    const classes = await this.fetchJson<ClassInfo[]>(`${this.baseUrl}/lecture/_repo/class101/json/myclasses.json`);
+  async getClassInfo(classId: string): Promise<ClassInfoWithLectures> {
+    const [classes, lectures] = await Promise.all([
+      this.fetchJson<ClassInfo[]>(`${this.baseUrl}/lecture/_repo/class101/json/myclasses.json`),
+      this.fetchJson<Lecture[]>(`${this.baseUrl}/lecture/_repo/class101/json/classes/${classId}.json`)
+    ]);
+
     const classInfo = classes.find((c) => c.classId === classId);
     if (!classInfo) {
       throw new Error(`Class ID ${classId} not found`);
     }
-    return classInfo;
+
+    return {
+      ...classInfo,
+      lectures: Array.isArray(lectures) ? lectures : lectures.lectures || []
+    };
   }
 
   async getLectureInfo(classId: string): Promise<LectureInfo[]> {
