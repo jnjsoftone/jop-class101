@@ -229,7 +229,58 @@ ${lectureList}`;
     classId: string;
   }): Promise<string> {
     const template = await this.getTemplate("lecture");
-    // ... 템플릿 처리 로직 구현 ...
-    return template;
+    const {
+      lecture,
+      noteTitle,
+      source,
+      category,
+      sanitizedClassTitle,
+      prevNoteTitle,
+      nextNoteTitle,
+    } = data;
+
+    // 이전/다음 강의 링크 생성
+    const prevLink = prevNoteTitle ? `[[${prevNoteTitle}|← 이전 강의]]` : '';
+    const nextLink = nextNoteTitle ? `[[${nextNoteTitle}|다음 강의 →]]` : '';
+    const navigationLinks = [
+      prevLink, 
+      `[[${sanitizedClassTitle}|❖ 전체 목록]]`, 
+      nextLink
+    ].filter(Boolean).join(' | ');
+
+    // 비디오 URL 생성
+    const videoUrl = `${this.settings.baseUrl}/lecture/class101/${sanitizedClassTitle}/${noteTitle}.mkv`;
+
+    // 링크 생성
+    const reviewLink = `[[${noteTitle}_review|리뷰 작성]]`;
+    const noteLink = `[[${noteTitle}_note|수업 노트]]`;
+    const scriptLink = `[[${noteTitle}_script|자막 보기]]`;
+
+    // 태그 생성
+    const tags = category ? `class101/${category.replace(/\s+/g, '')}` : 'class101';
+
+    // 템플릿 변수 치환
+    return template
+      .replace('{{title}}', lecture.title)
+      .replace('{{source}}', source)
+      .replace('{{duration}}', this.formatDuration(lecture.duration))
+      .replace('{{category}}', category)
+      .replace('{{tags}}', tags)
+      .replace('{{videoUrl}}', videoUrl)
+      .replace('{{navigationLinks}}', navigationLinks)
+      .replace('{{reviewLink}}', reviewLink)
+      .replace('{{noteLink}}', noteLink)
+      .replace('{{scriptLink}}', scriptLink);
+  }
+
+  private formatDuration(seconds: number): string {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const remainingSeconds = seconds % 60;
+
+    if (hours > 0) {
+      return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
+    }
+    return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
   }
 } 
