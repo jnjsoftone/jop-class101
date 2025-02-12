@@ -66,7 +66,7 @@ tags:
       case "lecture":
         return `---
 title: {{title}}
-source: {{source}}
+sourceURL: {{sourceURL}}
 duration: {{duration}}
 category: {{category}}
 tags: {{tags}}
@@ -262,7 +262,7 @@ ${lectureList}`;
     // 템플릿 변수 치환
     return template
       .replace('{{title}}', lecture.title)
-      .replace('{{source}}', source)
+      .replace('{{sourceURL}}', source)
       .replace('{{duration}}', this.formatDuration(lecture.duration))
       .replace('{{category}}', category)
       .replace('{{tags}}', tags)
