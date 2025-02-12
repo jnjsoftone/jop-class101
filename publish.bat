@@ -46,15 +46,6 @@ REM 2. 빌드
 call npm run build
 if errorlevel 1 goto :error
 
-REM 3. npm 버전 업데이트 (이때 자동으로 버전 태그가 생성됨)
-call npm version %mode%
-if errorlevel 1 goto :error
-
-REM 4. package.json의 버전을 manifest.json에 적용
-for /f "tokens=*" %%i in ('node -p "require('./package.json').version"') do set version=%%i
-node -e "const fs = require('fs'); const manifest = require('./dist/manifest.json'); manifest.version = '%version%'; fs.writeFileSync('./dist/manifest.json', JSON.stringify(manifest, null, 2) + '\n');"
-if errorlevel 1 goto :error
-
 REM 5. 변경사항 커밋
 git add .
 if errorlevel 1 goto :error
@@ -64,6 +55,25 @@ if errorlevel 1 goto :error
 REM 6. git push
 git push --follow-tags
 if errorlevel 1 goto :error
+
+REM 3. npm 버전 업데이트 (이때 자동으로 버전 태그가 생성됨)
+call npm version %mode%
+if errorlevel 1 goto :error
+
+REM 4. package.json의 버전을 manifest.json에 적용
+for /f "tokens=*" %%i in ('node -p "require('./package.json').version"') do set version=%%i
+node -e "const fs = require('fs'); const manifest = require('./dist/manifest.json'); manifest.version = '%version%'; fs.writeFileSync('./dist/manifest.json', JSON.stringify(manifest, null, 2) + '\n');"
+if errorlevel 1 goto :error
+
+@REM REM 5. 변경사항 커밋
+@REM git add .
+@REM if errorlevel 1 goto :error
+@REM git commit -m "chore: release version %version%"
+@REM if errorlevel 1 goto :error
+
+@REM REM 6. git push
+@REM git push --follow-tags
+@REM if errorlevel 1 goto :error
 
 REM :: 7. obsidian 플러그인 배포
 del /Q "%PLUGIN_DIR%\*"

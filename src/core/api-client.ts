@@ -1,4 +1,9 @@
-import type { ClassInfo, LectureInfo } from "./types";
+import type { 
+  ClassInfo, 
+  LectureInfo, 
+  Lecture, 
+  ClassInfoWithLectures 
+} from "./types";
 
 export class Class101ApiClient {
   constructor(private baseUrl: string) {}
@@ -39,9 +44,9 @@ export class Class101ApiClient {
   }
 
   async getClassInfo(classId: string): Promise<ClassInfoWithLectures> {
-    const [classes, lectures] = await Promise.all([
+    const [classes, lecturesResponse] = await Promise.all([
       this.fetchJson<ClassInfo[]>(`${this.baseUrl}/lecture/_repo/class101/json/myclasses.json`),
-      this.fetchJson<Lecture[]>(`${this.baseUrl}/lecture/_repo/class101/json/classes/${classId}.json`)
+      this.fetchJson<Lecture[] | { lectures: Lecture[] }>(`${this.baseUrl}/lecture/_repo/class101/json/classes/${classId}.json`)
     ]);
 
     const classInfo = classes.find((c) => c.classId === classId);
@@ -49,9 +54,13 @@ export class Class101ApiClient {
       throw new Error(`Class ID ${classId} not found`);
     }
 
+    const lectures = Array.isArray(lecturesResponse) 
+      ? lecturesResponse 
+      : lecturesResponse.lectures;
+
     return {
       ...classInfo,
-      lectures: Array.isArray(lectures) ? lectures : lectures.lectures || []
+      lectures: lectures || []
     };
   }
 
